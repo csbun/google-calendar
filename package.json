@@ -1,0 +1,26 @@
+{
+  "name": "cli-google-calendar",
+  "version": "0.0.0",
+  "description": "Command Line Google Calendar",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/csbun/cli-google-calendar.git"
+  },
+  "keywords": [
+    "google",
+    "calendar"
+  ],
+  "author": "Hans Chan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/csbun/cli-google-calendar/issues"
+  },
+  "homepage": "https://github.com/csbun/cli-google-calendar",
+  "dependencies": {
+    "googleapis": "~1.0.10"
+  }
+}
