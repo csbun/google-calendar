@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/csbun/cli-google-calendar",
   "dependencies": {
-    "googleapis": "~1.0.10"
+    "googleapis": "~1.0.10",
+    "moment": "^2.8.3"
   }
 }
