@@ -59,19 +59,52 @@ exports.list = function () {
 // 写入一个事件
 // TODO: summary、description 时间等未设定
 exports.set = function () {
-    calendar.events.insert({
-        calendarId: CALENDAR_ID,
-        resource: {
-            start: {
-              dateTime: moment().format()
-            }, 
-            end: {
-              dateTime: moment().add(1, 'h').format()
-            }, 
-            summary: "winning @ life",
-            description: "winning @ life description"
-        }
-    }, handlerFactory(function (response) {
-        console.log(response);
-    }));
+    var readline = require('readline');
+    var Thenjs = require('thenjs');
+
+    var rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    var today = moment().format('YYYY-MM-DD') + ' ';
+    Thenjs(function (cont) {
+        var obj = {};
+        rl.question('summary: ', function (answer) {
+            obj.summary = answer;
+            cont(null, obj);
+        });
+    // }).then(function (cont, obj) {
+    //     rl.question('description: ', function (answer) {
+    //         obj.description = answer;
+    //         cont(null, obj);
+    //     });
+    }).then(function (cont, obj) {
+        rl.question('start time (HH:MM): ', function (answer) {
+            obj.start = {
+                dateTime: moment(today + answer + ':00').format()
+            };
+            cont(null, obj);
+        });
+    }).then(function (cont, obj) {
+        rl.question('end time: ', function (answer) {
+            obj.end = {
+                dateTime: moment(today + answer + ':00').format()
+            };
+            cont(null, obj);
+        });
+    }).then(function (cont, obj) {
+        rl.close();
+        calendar.events.insert({
+            calendarId: CALENDAR_ID,
+            resource: obj
+        }, handlerFactory(function (response) {
+            if (response.id) {
+                console.log('[success]');
+            } else {
+                console.log('[error]');
+                console.log(response);
+            }
+        }));
+    });
 };
