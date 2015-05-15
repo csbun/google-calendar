@@ -7,8 +7,7 @@ var globalActions = require('../actions/globalActions');
 
 var { Toolbar, IconButton } = mui;
 
-
-class MainMenu extends React.Component {
+class TopBar extends React.Component {
   openNav() {
     globalActions.openNav();
   }
@@ -18,11 +17,15 @@ class MainMenu extends React.Component {
         <IconButton
           iconClassName="fa fa-bars"
           tooltip="toggle menu"
-          onClick={this.openNav}
+          onClick={this.props.onLeftIconButtonClick}
         />
       </Toolbar>
     );
   }
+}
+
+Toolbar.PropTypes = {
+  onLeftIconButtonClick: React.PropTypes.func.isRequired
 };
 
-module.exports = MainMenu;
+module.exports = TopBar;

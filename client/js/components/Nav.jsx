@@ -4,7 +4,7 @@ var React = require('react');
 var Reflux = require('reflux');
 var mui = require('material-ui');
 
-var globalActions = require('../actions/globalActions');
+// stores
 var navStore = require('../stores/navStore');
 
 var { LeftNav } = mui;
@@ -13,23 +13,11 @@ var { LeftNav } = mui;
 var Nav = React.createClass({
   mixins: [Reflux.connect(navStore, 'items')],
 
-  propTypes: {
-    isOpen: React.PropTypes.bool.isRequired
+  // use react-router
+  contextTypes: {
+    router: React.PropTypes.func
   },
 
-  componentDidUpdate: function () {
-    if (this.props.isOpen) {
-      this.refs.leftnav.open();
-    } else {
-      this.refs.leftnav.close();
-    }
-  },
-  _onLeftNavOpen: function () {
-    globalActions.openNav();
-  },
-  _onLeftNavClose: function () {
-    globalActions.closeNav();
-  },
   render: function () {
     return (
       // Hideable Left Nav
@@ -37,10 +25,15 @@ var Nav = React.createClass({
         ref="leftnav"
         docked={false}
         menuItems={this.state.items}
-        onNavOpen={this._onLeftNavOpen}
-        onNavClose={this._onLeftNavClose}
+        onChange={this._onLeftNavChange}
       />
     );
+  },
+  toggle: function () {
+    this.refs.leftnav.toggle();
+  },
+  _onLeftNavChange: function (e, key, payload) {
+    this.context.router.transitionTo(payload.route);
   }
 });
 

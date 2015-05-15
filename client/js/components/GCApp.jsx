@@ -2,32 +2,35 @@
 
 var React = require('react');
 var Router = require('react-router');
-var Reflux = require('reflux');
-
-
-// stores
-var globalStore = require('../stores/globalStore');
 
 // components
-var MainMenu = require('./MainMenu.jsx');
+var TopBar = require('./TopBar.jsx');
 var Nav = require('./Nav.jsx');
 
 // router
 var RouteHandler = Router.RouteHandler;
 
-var GCApp = React.createClass({
-  mixins: [Reflux.connect(globalStore, 'base')],
+class GCApp extends React.Component{
 
-  render: function () {
+  constructor() {
+    super();
+    this._onNavToggle = this._onNavToggle.bind(this);
+  }
+
+  render() {
     return (
       <div>
-        <MainMenu />
-        <Nav isOpen={this.state.base.isNavOpen} />
+        <TopBar onLeftIconButtonClick={this._onNavToggle} />
+        <Nav ref="nav" />
 
         <RouteHandler/>
       </div>
     );
   }
-});
+  _onNavToggle() {
+    this.refs.nav.toggle();
+  }
+
+}
 
 module.exports = GCApp;
