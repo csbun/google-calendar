@@ -1,0 +1,70 @@
+'use strict';
+
+
+// Google
+var google = require('googleapis');
+var OAuth2 = google.auth.OAuth2;
+var CONFIG = require('./config/oauth.json');
+
+var oauth2Client = new OAuth2(
+    CONFIG.CLIENT_ID,
+    CONFIG.CLIENT_SECRET,
+    'http://127.0.0.1:4000/oauth2callback'
+);
+
+// 内存版 token
+var memTokenObj;
+function setToken(newToken) {
+  memTokenObj = newToken;
+}
+function getToken() {
+  return memTokenObj;
+}
+// end of memTokenObj
+
+
+exports.getOauth = function () {
+  return oauth2Client;
+};
+
+
+exports.before = function * (next) {
+  // 检查 token
+  var tokenObj = getToken();
+  if (tokenObj && tokenObj.access_token && tokenObj.expiry_date > new Date()) {
+    // 有 tokens 且没过期则可以直接操作
+    oauth2Client.setCredentials(tokenObj);
+    yield next;
+  } else {
+    // 没有期限内的 token 则重定向到 google OAuth2 地址
+    var oauthUrl = oauth2Client.generateAuthUrl({
+      'access_type': 'offline', // 'online' (default) or 'offline' (gets refresh_token)
+      scope: [
+        'https://www.googleapis.com/auth/calendar'
+      ]
+    });
+    // state 带上当前的地址
+    this.redirect(oauthUrl + '&state=' + encodeURIComponent(this.url));
+  }
+};
+
+
+exports.init = function (app) {
+  // google 登录回调地址
+  app.get('/oauth2callback', function * (next) {
+    var code = (this.query || '').code || '';
+    // 获取 token
+    oauth2Client.getToken(code, function (err, tokens) {
+      if (err) {
+        console.error(err);
+      } else {
+        // 获得 token 则保存
+        setToken(tokens);
+        console.log(tokens);
+      }
+    });
+    // todo: suould redirect in getToken-callback
+    this.redirect(this.query.state);
+  });
+
+};

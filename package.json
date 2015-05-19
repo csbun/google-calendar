@@ -21,7 +21,7 @@
   "author": "Hans Chan<icsbun@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "grant-koa": "^3.2.0",
+    "googleapis": "^2.0.4",
     "koa": "^0.20.0",
     "koa-accesslog": "0.0.2",
     "koa-bodyparser": "^2.0.0",
