@@ -14,8 +14,6 @@ var accesslog = require('koa-accesslog');
 var app = koa();
 app.use(accesslog());
 
-// static
-app.use(serve('client'));
 
 app.use(bodyParser());
 app.use(session(app));
@@ -23,9 +21,10 @@ app.use(router(app));
 koaqs(app);
 
 // oauth
-var oauth = require('./oauth');
-oauth.init(app);
-app.use(oauth.before);
+app.use(require('./oauth')(app));
+
+// static
+app.use(serve('client'));
 
 // apis
 require('./api').init(app);
