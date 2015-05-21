@@ -1,20 +1,24 @@
 'use strict';
 
 
-// Google
-var google = require('googleapis');
-var OAuth2 = google.auth.OAuth2;
+// Google Oauth
+// https://developers.google.com/google-apps/calendar/quickstart/node
+var googleAuth = require('google-auth-library');
 var CONFIG = require('./config/oauth.json');
 
-var oauth2Client = new OAuth2(
-    CONFIG.CLIENT_ID,
-    CONFIG.CLIENT_SECRET,
-    'http://127.0.0.1:4000/oauth2callback'
+// gapi.client.setApiKey('AIzaSyCIT95PyeaY6JAHeftgYPlGplT56UhuFbI');
+
+var auth = new googleAuth();
+var oauth2Client = new auth.OAuth2(
+  CONFIG.CLIENT_ID,
+  CONFIG.CLIENT_SECRET,
+  'http://127.0.0.1:4000/oauth2callback'
 );
 
 // 内存版 token
 var memTokenObj;
 function setToken(newToken) {
+  oauth2Client.credentials = newToken;
   memTokenObj = newToken;
 }
 function getToken() {
@@ -23,14 +27,7 @@ function getToken() {
 // end of memTokenObj
 
 
-
-exports.getOauth = function () {
-  return oauth2Client;
-};
-
-
-
-module.exports = function (app) {
+var googleOauth = function (app) {
   /**
    * google 登录回调地址
    */
@@ -73,14 +70,15 @@ module.exports = function (app) {
     var tokenObj = getToken();
     if (tokenObj && tokenObj.access_token && tokenObj.expiry_date > new Date()) {
       // 有 tokens 且没过期则可以直接操作
-      oauth2Client.setCredentials(tokenObj);
+      oauth2Client.credentials = tokenObj;
       yield next;
     } else {
       // 没有期限内的 token 则重定向到 google OAuth2 地址
       var oauthUrl = oauth2Client.generateAuthUrl({
         'access_type': 'offline', // 'online' (default) or 'offline' (gets refresh_token)
         scope: [
-          'https://www.googleapis.com/auth/calendar'
+          'https://www.googleapis.com/auth/calendar.readonly',
+          // 'https://www.googleapis.com/auth/calendar'
         ]
       });
       // state 带上当前的地址
@@ -89,3 +87,13 @@ module.exports = function (app) {
   };
 
 };
+
+/**
+ * 暴露一个方法
+ * 获取 oauth2Client
+ */
+googleOauth.getClient = function () {
+  return oauth2Client;
+};
+
+module.exports = googleOauth;

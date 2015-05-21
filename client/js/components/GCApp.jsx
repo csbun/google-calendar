@@ -10,6 +10,7 @@ var Nav = require('./Nav.jsx');
 // router
 var RouteHandler = Router.RouteHandler;
 
+// app React Component
 class GCApp extends React.Component{
 
   constructor() {

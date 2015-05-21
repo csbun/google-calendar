@@ -5,7 +5,10 @@ var mui = require('material-ui');
 
 var { MenuItem } = mui;
 
-var menuItems = [
+var menuItems = [{
+    route: 'day-view',
+    text: 'Day View'
+  },
   { route: 'get-started', text: 'Get Started' },
   { route: 'css-framework', text: 'CSS Framework' },
   { route: 'components', text: 'Components' },
