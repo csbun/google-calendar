@@ -1,24 +1,34 @@
 'use strict';
 
 var React = require('react');
+var Reflux = require('reflux');
 
-class DayTimeLine extends React.Component{
-  constructor() {
-    super();
-    this.state = {
+// stores
+var dayEventStore = require('../stores/dayEventStore');
+// actions
+var dayEventActions = require('../actions/dayEventActions');
+
+// Component
+var DayTimeLine = React.createClass({
+  mixins: [
+    Reflux.connect(dayEventStore, 'dayEvents')
+  ],
+
+  getInitialState: function() {
+    return {
       date: new Date()
     };
-    this.changeDate = this.changeDate.bind(this);
-  }
+  },
 
   // change the current date of this timeline
-  changeDate(date) {
+  changeDate: function (date) {
+    dayEventActions.onReloadEvents();
     this.setState({
       date: date
     });
-  }
+  },
 
-  render() {
+  render: function () {
     return (
       <div>
         I am DayTimeLine,
@@ -26,6 +36,6 @@ class DayTimeLine extends React.Component{
       </div>
     );
   }
-}
+});
 
 module.exports = DayTimeLine;

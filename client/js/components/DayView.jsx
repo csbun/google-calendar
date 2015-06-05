@@ -14,13 +14,23 @@ class DayView extends React.Component {
     this._onDateChange = this._onDateChange.bind(this);
   }
 
+  componentDidMount() {
+    var today = new Date();
+    this.refs.datePicker.setDate(today);
+    // 还是要手动触发一下 onChange
+    this._onDateChange(null, today);
+  }
+
   render() {
     return (
       <div>
         <DatePicker
+          ref="datePicker"
+          autoOk={true}
+          mode="landscape"
           onChange={this._onDateChange}
         />
-      <DayTimeLine ref="dayTimeLine" />
+        <DayTimeLine ref="dayTimeLine" />
         <EventEditor />
       </div>
     );
