@@ -9,15 +9,12 @@ var session = require('koa-session');
 var accesslog = require('koa-accesslog');
 
 
-
-
 var app = koa();
 app.use(accesslog());
 
 
 app.use(bodyParser());
 app.use(session(app));
-app.use(router(app));
 koaqs(app);
 
 // oauth
@@ -27,7 +24,7 @@ app.use(require('./oauth')(app));
 app.use(serve('client'));
 
 // apis
-require('./api').init(app);
+app.use(require('./api'));
 
 
 app.listen(4000, function() {

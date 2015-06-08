@@ -6,6 +6,7 @@ var mui = require('material-ui');
 
 // stores
 var eventTypeStore = require('../stores/eventTypeStore');
+var dayEventActions = require('../actions/dayEventActions');
 
 var { DropDownMenu, TextField, IconButton } = mui;
 
@@ -55,7 +56,7 @@ var EventEditor = React.createClass({
   },
 
   _onSave: function () {
-    console.log({
+    dayEventActions.createEvent({
       date: this.state.date,
       type: this.refs.eventTypeDropDown.state.selectedIndex,
       title: this.refs.eventTitleText.state.hasValue

@@ -1,12 +1,11 @@
 'use strict';
 
+var router = require('koa-router')();
 
 // Google Oauth
 // https://developers.google.com/google-apps/calendar/quickstart/node
 var googleAuth = require('google-auth-library');
 var CONFIG = require('./config/oauth.json');
-
-// gapi.client.setApiKey('AIzaSyCIT95PyeaY6JAHeftgYPlGplT56UhuFbI');
 
 var auth = new googleAuth();
 var oauth2Client = new auth.OAuth2(
@@ -31,7 +30,7 @@ var googleOauth = function (app) {
   /**
    * google 登录回调地址
    */
-  app.get('/oauth2callback', function * () {
+  router.get('/oauth2callback', function * () {
     var code = (this.query || '').code || '';
     // 使用 es6 的 Promise 封装 oauth2Client.getToken，使之可以 yield
     var promise = new Promise(function (resolve, reject) {
@@ -59,8 +58,9 @@ var googleOauth = function (app) {
       // 失败则输出 error
       that.body = err;
     });
-
   });
+
+  app.use(router.routes());
 
   /**
    * 返回一个方法，用于检查 Oauth
@@ -77,8 +77,8 @@ var googleOauth = function (app) {
       var oauthUrl = oauth2Client.generateAuthUrl({
         'access_type': 'offline', // 'online' (default) or 'offline' (gets refresh_token)
         scope: [
-          'https://www.googleapis.com/auth/calendar.readonly',
-          // 'https://www.googleapis.com/auth/calendar'
+          // 'https://www.googleapis.com/auth/calendar.readonly',
+          'https://www.googleapis.com/auth/calendar'
         ]
       });
       // state 带上当前的地址

@@ -37,7 +37,6 @@ class DayView extends React.Component {
   }
   _onDateChange(e, date) {
     this.refs.dayTimeLine.changeDate(date);
-    console.log(date);
   }
 }
 
