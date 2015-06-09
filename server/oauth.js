@@ -1,5 +1,7 @@
 'use strict';
 
+var fs = require('fs');
+var path = require('path');
 var router = require('koa-router')();
 
 // Google Oauth
@@ -14,16 +16,21 @@ var oauth2Client = new auth.OAuth2(
   'http://127.0.0.1:4000/oauth2callback'
 );
 
-// 内存版 token
-var memTokenObj;
+/**
+ * 文件版 token
+ */
+var TOKEN_FILE_PATH = path.join(__dirname, './config/.token.json');
+var cachedTokenObj = require(TOKEN_FILE_PATH);
+// 设置新的 token
 function setToken(newToken) {
   oauth2Client.credentials = newToken;
-  memTokenObj = newToken;
+  cachedTokenObj = newToken;
+  fs.writeFile(TOKEN_FILE_PATH, JSON.stringify(cachedTokenObj));
 }
+// 获取 token
 function getToken() {
-  return memTokenObj;
+  return cachedTokenObj;
 }
-// end of memTokenObj
 
 
 var googleOauth = function (app) {

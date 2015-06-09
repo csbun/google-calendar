@@ -1,10 +1,15 @@
 'use strict';
 
+var moment = require('moment');
 var router = require('koa-router')();
 
 var google = require('googleapis');
 var oauth = require('./oauth');
 
+/**
+ * API document:
+ * https://developers.google.com/google-apps/calendar/v3/reference/
+ */
 var calendar = google.calendar('v3');
 
 router.get('/index', function * (next) {
@@ -71,8 +76,41 @@ router.get('/dayEvents', function * () {
   this.body = (res || [])[0] || {};
 });
 
+
+/**
+ * 格式化时间
+ */
+function formatDateTime (date, timeString) {
+  return moment(date).format('YYYY-MM-DD') + 'T' +
+    moment(timeString, 'HH:mm').format('HH:mm:ssZZ');
+}
+
 router.post('/dayEvent', function * () {
-  this.body = {success: true};
+  var requestBody = this.request.body;
+  var ev = {
+    summary: requestBody.summary,
+    location: requestBody.location || '',
+    description: requestBody.description || '',
+    start: {
+      dateTime: formatDateTime(requestBody.date, requestBody.startTime)
+    },
+    end: {
+      dateTime: formatDateTime(requestBody.date, requestBody.endTime)
+    },
+    attendees: [],
+    reminders: {
+      useDefault: false,
+      overrides: [],
+    }
+  };
+  var res = yield function (cb) {
+      calendar.events.insert({
+        auth: oauth.getClient(),
+        calendarId: 'icsbun@gmail.com',
+        resource: ev
+      }, cb);
+    };
+  this.body = (res || [])[0] || {};
 });
 
 module.exports = router.routes();

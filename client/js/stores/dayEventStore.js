@@ -5,6 +5,7 @@ var superagent = require('superagent');
 
 // actions
 var dayEventActions = require('../actions/dayEventActions');
+let newEventAction = require('../actions/eventActions');
 
 var dayEvents = [];
 
@@ -14,7 +15,7 @@ module.exports = Reflux.createStore({
   listenables: [dayEventActions],
 
   // this will be called by all listening components as they register their listeners
-  getInitialState: function () {
+  getInitialState: () => {
     return dayEvents;
   },
 
@@ -31,17 +32,20 @@ module.exports = Reflux.createStore({
       });
   },
 
-  onCreateEvent: function (ev) {
-    var that = this;
+  onCreateEvent: (ev) => {
     superagent.post('/dayEvent')
       .send(ev)
       .accept('json')
-      .end(function (err, res) {
-        console.log(res);
-        // todo check result
-        // dayEvents = (res.body || '').items;
-        // 成功则重新加载
-        // dayEventActions.reloadEvents();
+      .end((err, res) => {
+        // 是否成功
+        if (res && res.body && res.body.created) {
+          // 重新加载
+          dayEventActions.reloadEvents(new Date(ev.date));
+          // 重置 new event 内容
+          newEventAction.resetEvent(ev);
+        } else {
+          alert(err || 'Oops!');
+        }
       });
   }
 

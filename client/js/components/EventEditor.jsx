@@ -1,23 +1,27 @@
 'use strict';
 
-var React = require('react');
-var Reflux = require('reflux');
-var mui = require('material-ui');
+let React = require('react');
+let Reflux = require('reflux');
+let mui = require('material-ui');
+let moment = require('moment');
 
 // stores
-var eventTypeStore = require('../stores/eventTypeStore');
-var dayEventActions = require('../actions/dayEventActions');
+let eventTypeStore = require('../stores/eventTypeStore');
+let newEventStore = require('../stores/eventStore');
+// actions
+let dayEventActions = require('../actions/dayEventActions');
 
-var { DropDownMenu, TextField, IconButton } = mui;
 
+let { DropDownMenu, TextField, FlatButton } = mui;
 
-var inputFieldStyle = {
+let inputFieldStyle = {
   width: '100%'
 };
 
-var EventEditor = React.createClass({
+let EventEditor = React.createClass({
   mixins: [
-    Reflux.connect(eventTypeStore, 'eventTypes')
+    Reflux.connect(eventTypeStore, 'eventTypes'),
+    Reflux.connect(newEventStore, 'newEvent')
   ],
 
   propTypes: {
@@ -29,6 +33,12 @@ var EventEditor = React.createClass({
       date: new Date()
     };
   },
+  componentDidUpdate: function () {
+    this.refs.eventSummaryText.setValue(this.state.newEvent.summary);
+    this.refs.eventStartTimeText.setValue(this.state.newEvent.startTime);
+    this.refs.eventEndTimeText.setValue(this.state.newEvent.endTime);
+    this.refs.eventDescriptionText.setValue(this.state.newEvent.description);
+  },
   changeDate: function (date) {
     this.setState({
       date: date
@@ -37,7 +47,6 @@ var EventEditor = React.createClass({
   render: function () {
     return (
       <div style={inputFieldStyle}>
-        <p>{'' + this.state.date}</p>
         <DropDownMenu
           ref="eventTypeDropDown"
           style={inputFieldStyle}
@@ -45,10 +54,34 @@ var EventEditor = React.createClass({
           menuItems={this.state.eventTypes}
         />
         <TextField
-          ref="eventTitleText"
+          ref="eventSummaryText"
+          floatingLabelText="summary"
+          defaultValue={this.state.newEvent.summary}
         />
-        <IconButton
-          text="save"
+        <TextField
+          ref="eventLocationText"
+          floatingLabelText="location"
+          defaultValue={this.state.newEvent.location}
+        />
+        <TextField
+          ref="eventStartTimeText"
+          floatingLabelText="start time"
+          defaultValue={this.state.newEvent.startTime}
+        />
+        <TextField
+          ref="eventEndTimeText"
+          floatingLabelText="end time"
+          defaultValue={this.state.newEvent.endTime}
+        />
+        <TextField
+          ref="eventDescriptionText"
+          floatingLabelText="description"
+          multiLine={true}
+          defaultValue={this.state.newEvent.description}
+        />
+        <FlatButton
+          label="Save"
+          primary={true}
           onClick={this._onSave}
         />
       </div>
@@ -56,10 +89,15 @@ var EventEditor = React.createClass({
   },
 
   _onSave: function () {
+    // console.log(this.state.newEvent);
     dayEventActions.createEvent({
-      date: this.state.date,
       type: this.refs.eventTypeDropDown.state.selectedIndex,
-      title: this.refs.eventTitleText.state.hasValue
+      summary: this.refs.eventSummaryText.getValue(),
+      location: this.refs.eventLocationText.getValue(),
+      date: this.state.date,
+      startTime: this.refs.eventStartTimeText.getValue(),
+      endTime: this.refs.eventEndTimeText.getValue(),
+      description: this.refs.eventDescriptionText.getValue()
     });
   }
 
