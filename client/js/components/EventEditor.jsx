@@ -3,7 +3,6 @@
 let React = require('react');
 let Reflux = require('reflux');
 let mui = require('material-ui');
-let moment = require('moment');
 
 // stores
 let eventTypeStore = require('../stores/eventTypeStore');
@@ -12,7 +11,7 @@ let newEventStore = require('../stores/eventStore');
 let dayEventActions = require('../actions/dayEventActions');
 
 
-let { DropDownMenu, TextField, FlatButton } = mui;
+let { SelectField, TextField, FlatButton } = mui;
 
 let inputFieldStyle = {
   width: '100%'
@@ -30,9 +29,17 @@ let EventEditor = React.createClass({
 
   getInitialState: function() {
     return {
-      date: new Date()
+      selectedEventType: eventTypeStore.find(),
+      date: new Date(),
+      style: {}
     };
   },
+  // componentDidMount: function () {
+  //   console.log();
+  //   this.setState({
+  //     selectedEventType: this.state.eventTypes[0]
+  //   });
+  // },
   componentDidUpdate: function () {
     this.refs.eventSummaryText.setValue(this.state.newEvent.summary);
     this.refs.eventStartTimeText.setValue(this.state.newEvent.startTime);
@@ -46,12 +53,14 @@ let EventEditor = React.createClass({
   },
   render: function () {
     return (
-      <div style={inputFieldStyle}>
-        <DropDownMenu
+      <div className="float-half-width" style={this.state.style}>
+        <SelectField
           ref="eventTypeDropDown"
-          style={inputFieldStyle}
-          autoWidth={true}
+          floatingLabelText="type"
+          hintText="typemm"
+          defaultValue={this.state.selectedEventType}
           menuItems={this.state.eventTypes}
+          onChange={this._onEventTypeChanged}
         />
         <TextField
           ref="eventSummaryText"
@@ -86,6 +95,15 @@ let EventEditor = React.createClass({
         />
       </div>
     );
+  },
+
+  _onEventTypeChanged: function (e) {
+    this.setState({
+      style: {
+        background: e.target.value.background
+      }
+    });
+    console.log(e.target.value);
   },
 
   _onSave: function () {

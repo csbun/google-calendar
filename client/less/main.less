@@ -1,6 +1,15 @@
-@import "node_modules/material-ui/src/less/scaffolding.less";
+html, body {
+  margin: 0;
+}
 
-//Define a custom less file to override any variables defined in scaffolding.less
-//@import "my-custom-overrides.less
+.clearfix:after {
+  content: "";
+  display: block;
+  clear: both;
+}
 
-@import "node_modules/material-ui/src/less/components.less";
+.float-half-width {
+  float: left;
+  width: 50%;
+  display: table-cell;
+}

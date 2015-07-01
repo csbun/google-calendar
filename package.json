@@ -4,7 +4,8 @@
   "description": "My simple Google Calendar",
   "scripts": {
     "start": "node --harmony server/index.js",
-    "dev": "nodemon --watch server --harmony server/index.js",
+    "dev": "npm run nodemon & npm run watch",
+    "nodemon": "nodemon --watch server --harmony server/index.js",
     "build": "browserify client/js/app.jsx -o client/js/bundle.js",
     "watch": "watchify client/js/app.jsx -o client/js/bundle.js"
   },
@@ -33,7 +34,7 @@
     "koa-router": "^5.1.1",
     "koa-session": "^3.1.0",
     "koa-static": "^1.4.9",
-    "material-ui": "^0.7.5",
+    "material-ui": "^0.9.2",
     "moment": "^2.10.3",
     "react": "^0.13.2",
     "react-router": "^0.13.3",

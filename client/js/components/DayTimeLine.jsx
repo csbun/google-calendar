@@ -4,6 +4,8 @@ var React = require('react');
 var Reflux = require('reflux');
 var moment = require('moment');
 
+let { List, ListItem } = require('material-ui');
+
 // stores
 var dayEventStore = require('../stores/dayEventStore');
 // actions
@@ -31,23 +33,18 @@ var DayTimeLine = React.createClass({
 
   render: function () {
     // 格式化时间
-    var formatTimeHHMM = function (time) {
-      return moment(time).format('HH:mm');
-    };
+    var formatTimeHHMM = time => moment(time).format('HH:mm');
     // 列表
     var indents = this.state.dayEvents.map(function (ev) {
       return (
-        <li>
-          <span className="summary">{ev.summary}({ev.colorId})</span>
-          <span className="time">{formatTimeHHMM(ev.start.dateTime)} - {formatTimeHHMM(ev.end.dateTime)}</span>
-        </li>
+        <ListItem
+          secondaryText={formatTimeHHMM(ev.start.dateTime) + '-' + formatTimeHHMM(ev.end.dateTime)}
+        >{ev.summary}({ev.colorId})</ListItem>
       );
     });
     // 渲染
     return (
-      <div>
-        <ul>{ indents }</ul>
-      </div>
+      <List className="float-half-width">{ indents }</List>
     );
   }
 });

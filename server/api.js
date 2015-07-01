@@ -97,6 +97,7 @@ router.post('/dayEvent', function * () {
     end: {
       dateTime: formatDateTime(requestBody.date, requestBody.endTime)
     },
+    colorId: requestBody.colorId,
     attendees: [],
     reminders: {
       useDefault: false,
