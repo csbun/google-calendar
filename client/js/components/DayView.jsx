@@ -6,12 +6,24 @@ var mui = require('material-ui');
 var DayTimeLine = require('./DayTimeLine.jsx');
 var EventEditor = require('./EventEditor.jsx');
 
-var { DatePicker } = mui;
+var { Card, CardText, DatePicker } = mui;
 
 class DayView extends React.Component {
   constructor() {
     super();
     this._onDateChange = this._onDateChange.bind(this);
+    // setInitialState
+    this.state = {
+      style: {
+        editorCard: {
+          width: 256,  // TextField 的默认宽度
+          float: 'left'
+        },
+        timeLineCard: {
+          marginLeft: 256 + 16 * 2 // TextField 的默认宽度 + CardText 的 padding * 2
+        }
+      }
+    };
   }
 
   componentDidMount() {
@@ -23,16 +35,22 @@ class DayView extends React.Component {
 
   render() {
     return (
-      <div className="clearfix">
-        <DatePicker
-          ref="datePicker"
-          autoOk={true}
-          mode="landscape"
-          onChange={this._onDateChange}
-        />
-        <DayTimeLine ref="dayTimeLine" />
-        <EventEditor />
-      </div>
+      <Card>
+        <CardText>
+          <DatePicker
+            ref="datePicker"
+            autoOk={true}
+            mode="landscape"
+            onChange={this._onDateChange}
+          />
+        </CardText>
+        <CardText style={this.state.style.editorCard}>
+          <EventEditor />
+        </CardText>
+        <CardText style={this.state.style.timeLineCard}>
+          <DayTimeLine ref="dayTimeLine" />
+        </CardText>
+      </Card>
     );
   }
   _onDateChange(e, date) {

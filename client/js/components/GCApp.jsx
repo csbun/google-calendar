@@ -12,6 +12,7 @@ var ThemeManager = new Styles.ThemeManager();
 
 // components
 var Nav = require('./Nav.jsx');
+var Progress = require('./Progress.jsx');
 
 // router
 var RouteHandler = Router.RouteHandler;
@@ -33,6 +34,7 @@ class GCApp extends React.Component{
   render() {
     return (
       <div>
+        <Progress />
         <AppBar
           onLeftIconButtonTouchTap={this._onLeftIconButtonTouchTap}
           title="Google Calendar"

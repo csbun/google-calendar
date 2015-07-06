@@ -1,6 +1,5 @@
 'use strict';
 
-var moment = require('moment');
 var router = require('koa-router')();
 
 var google = require('googleapis');
@@ -56,6 +55,9 @@ router.get('/calendars', function * () {
 // }]
 
 
+/**
+ * 加载 Event 列表
+ */
 router.get('/dayEvents', function * () {
   var now = new Date(+(this.query || '').date || undefined);
   var year = now.getFullYear();
@@ -76,28 +78,22 @@ router.get('/dayEvents', function * () {
   this.body = (res || [])[0] || {};
 });
 
-
 /**
- * 格式化时间
+ * 添加 Event
  */
-function formatDateTime (date, timeString) {
-  return moment(date).format('YYYY-MM-DD') + 'T' +
-    moment(timeString, 'HH:mm').format('HH:mm:ssZZ');
-}
-
-router.post('/dayEvent', function * () {
+router.put('/dayEvent', function * () {
   var requestBody = this.request.body;
   var ev = {
     summary: requestBody.summary,
     location: requestBody.location || '',
     description: requestBody.description || '',
     start: {
-      dateTime: formatDateTime(requestBody.date, requestBody.startTime)
+      dateTime: requestBody.startTime
     },
     end: {
-      dateTime: formatDateTime(requestBody.date, requestBody.endTime)
+      dateTime: requestBody.endTime
     },
-    colorId: requestBody.colorId,
+    colorId: requestBody.type,
     attendees: [],
     reminders: {
       useDefault: false,
@@ -113,5 +109,16 @@ router.post('/dayEvent', function * () {
     };
   this.body = (res || [])[0] || {};
 });
+
+
+/**
+ * 删除 Event
+ * TODO: 404 Not Found
+ */
+router.del('/dayEvent', function * () {
+  var requestBody = this.request.body;
+  console.log(requestBody);
+});
+
 
 module.exports = router.routes();

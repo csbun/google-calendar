@@ -3,47 +3,39 @@
 let React = require('react');
 let Reflux = require('reflux');
 let mui = require('material-ui');
+let moment = require('moment');
 
 // stores
 let eventTypeStore = require('../stores/eventTypeStore');
 let newEventStore = require('../stores/eventStore');
+let progressStore = require('../stores/progressStore');
 // actions
 let dayEventActions = require('../actions/dayEventActions');
 
-
-let { SelectField, TextField, FlatButton } = mui;
-
-let inputFieldStyle = {
-  width: '100%'
-};
+let { SelectField, TextField, TimePicker, RaisedButton } = mui;
 
 let EventEditor = React.createClass({
   mixins: [
     Reflux.connect(eventTypeStore, 'eventTypes'),
-    Reflux.connect(newEventStore, 'newEvent')
+    Reflux.connect(newEventStore, 'newEvent'),
+    Reflux.connect(progressStore, 'isProgressing')
   ],
 
-  propTypes: {
-    width: React.PropTypes.string.isRequired
-  },
+  // propTypes: {
+  //   width: React.PropTypes.string.isRequired
+  // },
 
   getInitialState: function() {
     return {
       selectedEventType: eventTypeStore.find(),
-      date: new Date(),
-      style: {}
+      date: new Date()
     };
   },
-  // componentDidMount: function () {
-  //   console.log();
-  //   this.setState({
-  //     selectedEventType: this.state.eventTypes[0]
-  //   });
-  // },
+  // 当 this.state.newEvent 更新时同时更新对应 Field 里面的内容
   componentDidUpdate: function () {
     this.refs.eventSummaryText.setValue(this.state.newEvent.summary);
-    this.refs.eventStartTimeText.setValue(this.state.newEvent.startTime);
-    this.refs.eventEndTimeText.setValue(this.state.newEvent.endTime);
+    this.refs.eventStartTimeText.setTime(this.state.newEvent.startTime);
+    this.refs.eventEndTimeText.setTime(this.state.newEvent.endTime);
     this.refs.eventDescriptionText.setValue(this.state.newEvent.description);
   },
   changeDate: function (date) {
@@ -53,9 +45,9 @@ let EventEditor = React.createClass({
   },
   render: function () {
     return (
-      <div className="float-half-width" style={this.state.style}>
+      <div>
         <SelectField
-          ref="eventTypeDropDown"
+          ref="eventTypeSelect"
           floatingLabelText="type"
           hintText="typemm"
           defaultValue={this.state.selectedEventType}
@@ -72,15 +64,19 @@ let EventEditor = React.createClass({
           floatingLabelText="location"
           defaultValue={this.state.newEvent.location}
         />
-        <TextField
+        <TimePicker
           ref="eventStartTimeText"
+          format="24hr"
           floatingLabelText="start time"
-          defaultValue={this.state.newEvent.startTime}
+          hintText="start time"
+          defaultTime={this.state.newEvent.startTime}
         />
-        <TextField
+        <TimePicker
           ref="eventEndTimeText"
+          format="24hr"
           floatingLabelText="end time"
-          defaultValue={this.state.newEvent.endTime}
+          hintText="end time"
+          defaultTime={this.state.newEvent.endTime}
         />
         <TextField
           ref="eventDescriptionText"
@@ -88,9 +84,10 @@ let EventEditor = React.createClass({
           multiLine={true}
           defaultValue={this.state.newEvent.description}
         />
-        <FlatButton
+        <RaisedButton
           label="Save"
           primary={true}
+          disabled={this.state.isProgressing}
           onClick={this._onSave}
         />
       </div>
@@ -99,22 +96,21 @@ let EventEditor = React.createClass({
 
   _onEventTypeChanged: function (e) {
     this.setState({
-      style: {
-        background: e.target.value.background
-      }
+      selectedEventType: e.target.value
     });
-    console.log(e.target.value);
   },
 
   _onSave: function () {
-    // console.log(this.state.newEvent);
+    let formatDate = moment(this.state.date).format('YYYY-MM-DD') + 'T';
+    let st = formatDate + moment(this.refs.eventStartTimeText.getTime()).format('HH:mm:ssZZ');
+    let et = formatDate + moment(this.refs.eventEndTimeText.getTime()).format('HH:mm:ssZZ');
     dayEventActions.createEvent({
-      type: this.refs.eventTypeDropDown.state.selectedIndex,
+      type: this.state.selectedEventType.payload,
       summary: this.refs.eventSummaryText.getValue(),
       location: this.refs.eventLocationText.getValue(),
       date: this.state.date,
-      startTime: this.refs.eventStartTimeText.getValue(),
-      endTime: this.refs.eventEndTimeText.getValue(),
+      startTime: st,
+      endTime: et,
       description: this.refs.eventDescriptionText.getValue()
     });
   }

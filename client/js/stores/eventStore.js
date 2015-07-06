@@ -8,13 +8,14 @@ var eventActions = require('../actions/eventActions');
 
 function genNewEvent(lastEvent) {
   lastEvent = lastEvent || {};
-  var lastEndMoment = lastEvent.endTime ? moment(lastEvent.endTime, 'HH:mm') : moment();
+  var startTimeMonent = moment(lastEvent.endTime || new Date());
+  var endTimeMonent = moment(lastEvent.endTime || new Date()).add(1, 'h');
   return {
     summary: '',
     description: '',
     location: lastEvent.location || '',
-    startTime: lastEndMoment.format('HH:mm'),
-    endTime: lastEndMoment.add(1, 'h').format('HH:mm'),
+    startTime: startTimeMonent.toDate(),
+    endTime: endTimeMonent.toDate(),
     type: lastEvent.type || '',
   };
 }
