@@ -28,7 +28,7 @@ module.exports = Reflux.createStore({
     superagent.get('/dayEvents')
       .query({ date: +date })
       .accept('json')
-      .end(function (err, res) {
+      .end((err, res) => {
         progressActions.setdown();
         dayEvents = (res.body || '').items;
         that.trigger(dayEvents);
@@ -54,7 +54,8 @@ module.exports = Reflux.createStore({
       });
   },
 
-  onDeleteEvent: (ev) => {
+  onDeleteEvent: function (ev) {
+    var that = this;
     progressActions.setup();
     superagent.del('/dayEvent')
       .send(ev)
@@ -62,16 +63,13 @@ module.exports = Reflux.createStore({
       .end((err, res) => {
         progressActions.setdown();
         // 是否成功
-        if (res && res.body && res.body.created) {
-          // 重新加载
-          dayEventActions.reloadEvents(new Date(ev.date));
-          // 重置 new event 内容
-          newEventActions.resetEvent(ev);
+        if (res && res.body) {
+          dayEvents = dayEvents.filter((de) => de.id !== ev.id);
+          that.trigger(dayEvents);
         } else {
           alert(err || 'Oops!');
         }
       });
-
   }
 
 });

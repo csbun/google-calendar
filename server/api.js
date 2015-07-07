@@ -113,11 +113,18 @@ router.put('/dayEvent', function * () {
 
 /**
  * 删除 Event
- * TODO: 404 Not Found
  */
 router.del('/dayEvent', function * () {
   var requestBody = this.request.body;
-  console.log(requestBody);
+  var res = yield (cb) => {
+      calendar.events.delete({
+        auth: oauth.getClient(),
+        calendarId: 'icsbun@gmail.com',
+        eventId: requestBody.id
+      }, cb);
+    };
+  // if success, res[0] === undefined
+  this.body = (res || [])[1] || {};
 });
 
 

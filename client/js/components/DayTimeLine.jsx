@@ -1,23 +1,34 @@
 'use strict';
 
-var React = require('react');
-var Reflux = require('reflux');
-var moment = require('moment');
+let React = require('react');
+let Reflux = require('reflux');
+let moment = require('moment');
 
 let { List, ListItem, IconButton } = require('material-ui');
 
 // stores
-var dayEventStore = require('../stores/dayEventStore');
+let dayEventStore = require('../stores/dayEventStore');
+let eventTypeStore = require('../stores/eventTypeStore');
 // actions
-var dayEventActions = require('../actions/dayEventActions');
+let dayEventActions = require('../actions/dayEventActions');
 
-var deleteIconStyle = {
+let deleteIconStyle = {
   color: 'red',
   fontSize: 20
 };
 
+// 格式化时间
+let formatTimeHHMM = time => moment(time).format('HH:mm');
+
+let getListItemStyle = (ev) => {
+  return {
+    borderLeft: '4px solid ' + eventTypeStore.find(ev.colorId).background
+    // backgroundColor: eventTypeStore.find(ev.colorId).background
+  };
+};
+
 // Component
-var DayTimeLine = React.createClass({
+let DayTimeLine = React.createClass({
   mixins: [
     Reflux.connect(dayEventStore, 'dayEvents')
   ],
@@ -37,19 +48,18 @@ var DayTimeLine = React.createClass({
   },
 
   render: function () {
-    var that = this;
-    // 格式化时间
-    var formatTimeHHMM = time => moment(time).format('HH:mm');
+    let that = this;
     // 列表
-    var indents = this.state.dayEvents.map(function (ev) {
+    let indents = this.state.dayEvents.map(function (ev) {
       return (
         <ListItem
+          style={getListItemStyle(ev)}
           key={ev.id}
           secondaryText={formatTimeHHMM(ev.start.dateTime) + '-' + formatTimeHHMM(ev.end.dateTime)}
           rightIconButton={
             <IconButton style={deleteIconStyle} onClick={that._onDeleteEvent.bind(this, ev)}>×</IconButton>
           }
-        >{ev.summary}({ev.colorId})</ListItem>
+        >{ev.summary}</ListItem>
       );
     });
     // 渲染
