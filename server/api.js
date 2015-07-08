@@ -30,30 +30,13 @@ router.get('/colors', function * () {
  * 获取日历列表
  */
 router.get('/calendars', function * () {
-  this.body = yield function (cb) {
+  var res = yield function (cb) {
     calendar.calendarList.list({
       auth: oauth.getClient()
     }, cb);
   };
+  this.body = (res || [])[0] || {};
 });
-// [{
-//   "id": "1b2rqi013kj4llo7n9vmi8k0r8@group.calendar.google.com",
-//   "summary": "Life",
-// }, {
-//     "id": "vac63k1hq28ss6jrmqd9t6m70g@group.calendar.google.com",
-//     "summary": "菜菜肉肉",
-// }, {
-//     "id": "icsbun@gmail.com",
-//     "summary": "icsbun@gmail.com",
-//     "primary": true
-// }, {
-//     "id": "#contacts@group.v.calendar.google.com",
-//     "summary": "生日",
-// }, {
-//     "id": "zh.china#holiday@group.v.calendar.google.com",
-//     "summary": "Holidays in China",
-// }]
-
 
 /**
  * 加载 Event 列表
@@ -124,7 +107,9 @@ router.del('/dayEvent', function * () {
       }, cb);
     };
   // if success, res[0] === undefined
-  this.body = (res || [])[1] || {};
+  this.body = {
+    success: res.length === 2 && res[0] === undefined
+  };
 });
 
 

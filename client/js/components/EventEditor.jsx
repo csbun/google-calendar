@@ -33,6 +33,7 @@ let EventEditor = React.createClass({
   },
   // 当 this.state.newEvent 更新时同时更新对应 Field 里面的内容
   componentDidUpdate: function () {
+    // TODO: 这里还是又问题
     this.refs.eventSummaryText.setValue(this.state.newEvent.summary);
     this.refs.eventStartTimeText.setTime(this.state.newEvent.startTime);
     this.refs.eventEndTimeText.setTime(this.state.newEvent.endTime);
@@ -49,7 +50,7 @@ let EventEditor = React.createClass({
         <SelectField
           ref="eventTypeSelect"
           floatingLabelText="type"
-          hintText="typemm"
+          hintText="type"
           defaultValue={this.state.selectedEventType}
           menuItems={this.state.eventTypes}
           onChange={this._onEventTypeChanged}

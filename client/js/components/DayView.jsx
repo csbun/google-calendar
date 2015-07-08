@@ -3,6 +3,7 @@
 var React = require('react');
 var mui = require('material-ui');
 
+var CalendarSelector = require('./CalendarSelector.jsx');
 var DayTimeLine = require('./DayTimeLine.jsx');
 var EventEditor = require('./EventEditor.jsx');
 
@@ -37,6 +38,7 @@ class DayView extends React.Component {
     return (
       <Card>
         <CardText>
+          <CalendarSelector style={this.state.style.editorCard} />
           <DatePicker
             ref="datePicker"
             autoOk={true}
