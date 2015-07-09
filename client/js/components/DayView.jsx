@@ -1,6 +1,6 @@
 'use strict';
 
-var React = require('react');
+var React = require('react/addons');
 var mui = require('material-ui');
 
 var CalendarSelector = require('./CalendarSelector.jsx');
@@ -13,8 +13,13 @@ class DayView extends React.Component {
   constructor() {
     super();
     this._onDateChange = this._onDateChange.bind(this);
+    this._onCalendarChange = this._onCalendarChange.bind(this);
     // setInitialState
     this.state = {
+      timeline: {
+        date: new Date(),
+        calendarId: 'primary'
+      },
       style: {
         editorCard: {
           width: 256,  // TextField 的默认宽度
@@ -28,17 +33,17 @@ class DayView extends React.Component {
   }
 
   componentDidMount() {
-    var today = new Date();
-    this.refs.datePicker.setDate(today);
-    // 还是要手动触发一下 onChange
-    this._onDateChange(null, today);
+    this.refs.datePicker.setDate(this.state.timeline.date);
   }
 
   render() {
     return (
       <Card>
         <CardText>
-          <CalendarSelector style={this.state.style.editorCard} />
+          <CalendarSelector
+            selectedIndex={this.state.timeline.selectedIndex}
+            onChange={this._onCalendarChange}
+          />
           <DatePicker
             ref="datePicker"
             autoOk={true}
@@ -47,16 +52,31 @@ class DayView extends React.Component {
           />
         </CardText>
         <CardText style={this.state.style.editorCard}>
-          <EventEditor />
+          <EventEditor {...this.state.timeline} />
         </CardText>
         <CardText style={this.state.style.timeLineCard}>
-          <DayTimeLine ref="dayTimeLine" />
+          <DayTimeLine {...this.state.timeline} ref="dayTimeLine" />
         </CardText>
       </Card>
     );
   }
+
+  // DatePicker 更新时触发
   _onDateChange(e, date) {
-    this.refs.dayTimeLine.changeDate(date);
+    var timeline = this.state.timeline;
+    timeline.date = date;
+    this.setState({
+      timeline: timeline
+    });
+  }
+
+  // CalendarSelector 更新时触发
+  _onCalendarChange(item) {
+    var timeline = this.state.timeline;
+    timeline.calendarId = item.id;
+    this.setState({
+      timeline: timeline
+    });
   }
 }
 

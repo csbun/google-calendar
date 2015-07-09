@@ -21,14 +21,14 @@ let EventEditor = React.createClass({
     Reflux.connect(progressStore, 'isProgressing')
   ],
 
-  // propTypes: {
-  //   width: React.PropTypes.string.isRequired
-  // },
+  propTypes: {
+    date: React.PropTypes.object.isRequired,
+    calendarId: React.PropTypes.string.isRequired,
+  },
 
   getInitialState: function() {
     return {
-      selectedEventType: eventTypeStore.find(),
-      date: new Date()
+      selectedEventType: eventTypeStore.find()
     };
   },
   // 当 this.state.newEvent 更新时同时更新对应 Field 里面的内容
@@ -39,11 +39,7 @@ let EventEditor = React.createClass({
     this.refs.eventEndTimeText.setTime(this.state.newEvent.endTime);
     this.refs.eventDescriptionText.setValue(this.state.newEvent.description);
   },
-  changeDate: function (date) {
-    this.setState({
-      date: date
-    });
-  },
+
   render: function () {
     return (
       <div>
@@ -102,14 +98,15 @@ let EventEditor = React.createClass({
   },
 
   _onSave: function () {
-    let formatDate = moment(this.state.date).format('YYYY-MM-DD') + 'T';
+    let formatDate = moment(this.props.date).format('YYYY-MM-DD') + 'T';
     let st = formatDate + moment(this.refs.eventStartTimeText.getTime()).format('HH:mm:ssZZ');
     let et = formatDate + moment(this.refs.eventEndTimeText.getTime()).format('HH:mm:ssZZ');
     dayEventActions.createEvent({
+      date: this.props.date,
+      calendarId: this.props.calendarId,
       type: this.state.selectedEventType.payload,
       summary: this.refs.eventSummaryText.getValue(),
       location: this.refs.eventLocationText.getValue(),
-      date: this.state.date,
       startTime: st,
       endTime: et,
       description: this.refs.eventDescriptionText.getValue()

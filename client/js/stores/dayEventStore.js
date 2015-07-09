@@ -21,12 +21,14 @@ module.exports = Reflux.createStore({
   },
 
   // bind to actions
-  onReloadEvents: function (date) {
+  onReloadEvents: function (data) {
     var that = this;
+    var query = Object.create(data);
+    query.date = +query.date;
     // load events from google api
     progressActions.setup();
     superagent.get('/dayEvents')
-      .query({ date: +date })
+      .query(query)
       .accept('json')
       .end((err, res) => {
         progressActions.setdown();

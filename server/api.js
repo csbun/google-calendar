@@ -1,7 +1,7 @@
 'use strict';
 
 var router = require('koa-router')();
-
+var moment = require('moment');
 var google = require('googleapis');
 var oauth = require('./oauth');
 
@@ -12,7 +12,6 @@ var oauth = require('./oauth');
 var calendar = google.calendar('v3');
 
 router.get('/index', function * (next) {
-  console.log('index');
   this.body = 'index';
   yield next;
 });
@@ -42,17 +41,13 @@ router.get('/calendars', function * () {
  * 加载 Event 列表
  */
 router.get('/dayEvents', function * () {
-  var now = new Date(+(this.query || '').date || undefined);
-  var year = now.getFullYear();
-  var month = now.getMonth();
-  var date = now.getDate();
-
+  var date = moment(+this.query.date || undefined);
   var res = yield function (cb) {
       calendar.events.list({
         auth: oauth.getClient(),
-        calendarId: 'icsbun@gmail.com',
-        timeMin: (new Date(year, month, date)).toISOString(),
-        timeMax: (new Date(year, month, date + 1)).toISOString(),
+        calendarId: this.query.calendarId || 'primary',
+        timeMin: date.toISOString(),
+        timeMax: date.add(1, 'd').toISOString(),
         // maxResults: 100,
         singleEvents: true,
         orderBy: 'startTime'
@@ -66,6 +61,8 @@ router.get('/dayEvents', function * () {
  */
 router.put('/dayEvent', function * () {
   var requestBody = this.request.body;
+  // TODO: get calendarId
+  var calendarId = this.query.calendarId || 'primary';
   var ev = {
     summary: requestBody.summary,
     location: requestBody.location || '',
@@ -86,7 +83,7 @@ router.put('/dayEvent', function * () {
   var res = yield function (cb) {
       calendar.events.insert({
         auth: oauth.getClient(),
-        calendarId: 'icsbun@gmail.com',
+        calendarId: calendarId,
         resource: ev
       }, cb);
     };
@@ -99,6 +96,7 @@ router.put('/dayEvent', function * () {
  */
 router.del('/dayEvent', function * () {
   var requestBody = this.request.body;
+  // TODO: get calendarId
   var res = yield (cb) => {
       calendar.events.delete({
         auth: oauth.getClient(),

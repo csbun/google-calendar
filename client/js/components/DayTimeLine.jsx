@@ -33,19 +33,17 @@ let DayTimeLine = React.createClass({
     Reflux.connect(dayEventStore, 'dayEvents')
   ],
 
-  getInitialState: function() {
-    return {
-      date: new Date()
-    };
+  propTypes: {
+    date: React.PropTypes.object.isRequired,
+    calendarId: React.PropTypes.string.isRequired
   },
 
-  // change the current date of this timeline
-  changeDate: function (date) {
-    dayEventActions.reloadEvents(date);
-    this.setState({
-      date: date
-    });
+  // 初始化时加载数据
+  componentDidMount: function() {
+    dayEventActions.reloadEvents(this.props);
   },
+  // props 更新时重新加载
+  componentWillReceiveProps: (nextProps) => dayEventActions.reloadEvents(nextProps),
 
   render: function () {
     let that = this;
@@ -57,7 +55,7 @@ let DayTimeLine = React.createClass({
           key={ev.id}
           secondaryText={formatTimeHHMM(ev.start.dateTime) + '-' + formatTimeHHMM(ev.end.dateTime)}
           rightIconButton={
-            <IconButton style={deleteIconStyle} onClick={that._onDeleteEvent.bind(this, ev)}>×</IconButton>
+            <IconButton style={deleteIconStyle} onClick={that._onDeleteEvent.bind(null, ev)}>×</IconButton>
           }
         >{ev.summary}</ListItem>
       );
@@ -68,6 +66,7 @@ let DayTimeLine = React.createClass({
     );
   },
 
+  // 点击删除
   _onDeleteEvent: function (ev) {
     dayEventActions.deleteEvent(ev);
   }
