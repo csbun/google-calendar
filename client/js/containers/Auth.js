@@ -1,9 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import auth from '../actions/auth';
+import {
+  LS_KEY_CLIENT_ID,
+  LS_KEY_API_KEY,
+} from '../constants/auth';
 
-const LS_KEY_CLIENT_ID = 'AUTH_CLIENT_ID';
-const LS_KEY_API_KEY = 'AUTH_API_KEY';
+// const mapDispatchToProps = dispatch => ({
+//   onAuthClick: (clientId, apiKey) => {
+//
+//   },
+// });
 
 
 let Auth = ({ dispatch }) => {

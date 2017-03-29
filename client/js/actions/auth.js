@@ -14,7 +14,6 @@ function requestAuth(clientId, apiKey) {
 }
 
 function receiveAuthResult(data) {
-  console.log(data);
   return {
     type: RECEIVE_AUTH_RESULT,
     data,
@@ -26,30 +25,20 @@ function startAuth(dispatch, clientId, apiKey) {
   gapi.client.setApiKey(apiKey);
   return new Promise((resolve) => {
     let handleAuthResult = null;
-    function handleAuthClick() {
-      // Step 3: get authorization to use private data
-      gapi.auth.authorize({
-        client_id: clientId,
-        scope: scopes,
-        immediate: false,
-      }, handleAuthResult);
-      return false;
-    }
     handleAuthResult = authResult => {
       if (authResult && !authResult.error) {
         dispatch(receiveAuthResult(authResult));
         resolve();
       } else {
-        handleAuthClick();
+        // handleAuthClick();
       }
     };
-    setTimeout(() => {
-      gapi.auth.authorize({
-        client_id: clientId,
-        scope: scopes,
-        immediate: true,
-      }, handleAuthResult);
-    }, 1);
+    // Step 3: get authorization to use private data
+    gapi.auth.authorize({
+      client_id: clientId,
+      scope: scopes,
+      immediate: false,
+    }, handleAuthResult);
   });
 }
 

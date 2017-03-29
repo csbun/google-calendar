@@ -18,6 +18,7 @@ Designing Component Hierarchy
 
 ### Container Components
 
+- `ifAuth` check if auth.
 - `VisibleEventList` filters the events according to the current visibility filter and renders a EventList.
 
 ### Other Components
