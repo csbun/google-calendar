@@ -24,7 +24,7 @@
   "license": "MIT",
   "dependencies": {
     "google-auth-library": "^0.9.5",
-    "googleapis": "^2.0.4",
+    "googleapis": "^59.0.0",
     "immutable": "^3.7.3",
     "koa": "^0.20.0",
     "koa-accesslog": "0.0.2",
